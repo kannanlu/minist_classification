@@ -14,18 +14,8 @@ from models.simple_models import SimpleLayer
 from models.utils import (train_model, train_model_with_logger,
                           train_model_default, save_model, load_model)
 from torch.utils.tensorboard import SummaryWriter
-#%% set device and seed
-device = set_device(if_mac=True)
-set_seed(if_mac=True)
-#%%
-# download and prepare MNIST data set
-train_data, valid_data, test_data = download_dataset()
 
-train_data = MNISTDataset(train_data)
-valid_data = MNISTDataset(valid_data)
-test_data = MNISTDataset(test_data)
-
-#%% hyperparameters
+# hyperparameters
 # activation function
 act_fn_by_name = {
     "sigmoid": nn.Sigmoid,
@@ -47,40 +37,49 @@ logging_dir = "./logs"
 # data loader parameters
 batch_size = 4
 if_shuffle = True
-num_workers = 1
+num_workers = 4
 if_drop_last = True
 
 # model save/load
 model_name = "SimpleLayer"
 checkpoint_path = "./checkpoints"
 
-#%% data loader
-train_loader = data.DataLoader(train_data,
-                               batch_size=batch_size,
-                               shuffle=if_shuffle,
-                               num_workers=num_workers,
-                               drop_last=if_drop_last)
-valid_loader = data.DataLoader(valid_data,
-                               batch_size=batch_size,
-                               shuffle=if_shuffle,
-                               num_workers=num_workers,
-                               drop_last=if_drop_last)
-test_loader = data.DataLoader(test_data,
-                              batch_size=batch_size,
-                              shuffle=if_shuffle,
-                              num_workers=num_workers,
-                              drop_last=if_drop_last)
-
-#%% define model,initialization, loss function, and optimization method
-model = SimpleLayer(act_fn=act_fn_by_name["sigmoid"], c_in=28 * 28, c_out=10)
-loss_model = loss_fn_by_name["cross_entropy"]()
-optimizer = optim_by_name["sgd"](model.parameters(), lr=0.01)
-
-# push the model to device
-model.to(device)
-
-#%% train
+#%% train, get the best result and test
 if __name__ == "__main__":
+    # set device and seed
+    device = set_device(if_mac=True)
+    set_seed(if_mac=True)
+    # download and prepare MNIST data set
+    train_data, valid_data, test_data = download_dataset()
+
+    train_data = MNISTDataset(train_data)
+    valid_data = MNISTDataset(valid_data)
+    test_data = MNISTDataset(test_data)
+
+    train_loader = data.DataLoader(train_data,
+                                   batch_size=batch_size,
+                                   shuffle=if_shuffle,
+                                   num_workers=num_workers,
+                                   drop_last=if_drop_last)
+    valid_loader = data.DataLoader(valid_data,
+                                   batch_size=batch_size,
+                                   shuffle=if_shuffle,
+                                   num_workers=num_workers,
+                                   drop_last=if_drop_last)
+    test_loader = data.DataLoader(test_data,
+                                  batch_size=batch_size,
+                                  shuffle=if_shuffle,
+                                  num_workers=num_workers,
+                                  drop_last=if_drop_last)
+
+    # set up model, loss module, and optimizer
+    model = SimpleLayer(act_fn_name="sigmoid", c_in=28 * 28, c_out=10)
+    loss_model = loss_fn_by_name["cross_entropy"]()
+    optimizer = optim_by_name["sgd"](model.parameters(), lr=0.01)
+
+    # push the model to device
+    model.to(device)
+
     results = train_model_default(device,
                                   model,
                                   optimizer,

@@ -10,6 +10,7 @@ import torch
 from utils.utilities import _get_config_file, _get_model_file, _get_result_file
 from tqdm.notebook import tqdm
 from torch import optim
+from models.simple_models import SimpleLayer
 from torch.utils.tensorboard import SummaryWriter
 
 act_fn_by_name = {
@@ -294,6 +295,8 @@ def eval_model(device, model, data_loader, loss_module):
 
 
 def load_model(model_path, model_name, net=None):
+    """load model file and model config 
+    """
     config_file, model_file = _get_config_file(model_path,
                                                model_name), _get_model_file(
                                                    model_path, model_name)
@@ -306,15 +309,16 @@ def load_model(model_path, model_name, net=None):
     with open(config_file, "r") as f:
         config_dict = json.load(f)
     if net is None:
-        act_fn_name = config_dict["act_fn"].pop("name").lower()
+        act_fn_name = config_dict["act_fn_name"].lower()
         assert act_fn_name in act_fn_by_name, f"Unknown activation function \"{act_fn_name}\". Please add it to the \"act_fn_by_name\" dict."
-        act_fn = act_fn_by_name[act_fn_name]()
-        net = SimpleLayer(act_fn=act_fn, **config_dict)
+        net = SimpleLayer(**config_dict)
     net.load_state_dict(torch.load(model_file))
     return net
 
 
 def save_model(model, model_path, model_name):
+    """save model file and model config
+    """
     config_dict = model.config
     os.makedirs(model_path, exist_ok=True)
     config_file, model_file = _get_config_file(model_path,

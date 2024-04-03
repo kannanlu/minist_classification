@@ -29,16 +29,17 @@ class SimpleLayer(nn.Module):
     """28*28 to 10 single layer nn
     """
 
-    def __init__(self, act_fn, c_in: int, c_out: int) -> None:
+    def __init__(self, act_fn_name: str, c_in: int, c_out: int) -> None:
         super().__init__()
 
         self.flatten = nn.Flatten()
-        self.act_fn = act_fn()
+        self.act_fn = act_fn_by_name[act_fn_name.lower()]()  #pass in low str
         self.net = nn.Linear(c_in, c_out)
         self.config = {
-            "act_fn": self.act_fn.__class__.__name__,
-            "input_size": c_in,
-            "output_size": c_out,
+            "act_fn_name":
+            self.act_fn.__class__.__name__,  # store names in nn 
+            "c_in": c_in,
+            "c_out": c_out,
         }
 
     def forward(self, x):
