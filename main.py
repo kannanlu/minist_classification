@@ -35,7 +35,7 @@ optim_by_name = {"sgd": optim.SGD}
 logging_dir = "./logs"
 
 # data loader parameters
-batch_size = 4
+batch_size = 8
 if_shuffle = True
 num_workers = 4
 if_drop_last = True
