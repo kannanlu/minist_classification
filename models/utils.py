@@ -141,7 +141,8 @@ def train_model_default(device,
                         num_epochs=100,
                         logging_dir: str = "./logs",
                         checkpoint_path: str = "./checkpoint",
-                        if_overwrite: bool = False):
+                        if_overwrite: bool = False,
+                        if_logging: bool = False):
     """Perform training over number of epochs, for each epoch, validate the result, and store the best result. 
     the function checks if a previous result exists, if not, start the training; if it exists, depending on if we want
     to overwrite the current result. 
@@ -171,8 +172,10 @@ def train_model_default(device,
         if file_exist:
             print("Model file exists, but will be overwritten...")
 
-        # create tensorboard logger
-        writer = SummaryWriter(log_dir=logging_dir)
+        if if_logging:
+            # create tensorboard logger
+            writer = SummaryWriter(log_dir=logging_dir)
+
         model_graph_documented = False  # flag to store the computational graph for first data point of each epoch
         # Set model to train mode
         results = None
@@ -192,7 +195,7 @@ def train_model_default(device,
                 data_labels = data_labels.to(device)
 
                 # add the computational graph of the first data point to tensorboard
-                if not model_graph_documented:
+                if (not model_graph_documented) and (if_logging):
                     writer.add_graph(model, data_inputs)
                     model_graph_documented = True
 
@@ -219,17 +222,19 @@ def train_model_default(device,
             train_scores.append(train_acc)
             # Add average loss to TensorBoard
             train_loss /= len(train_loader)
-            writer.add_scalar("training_loss",
-                              train_loss,
-                              global_step=epoch + 1)
+            if if_logging:
+                writer.add_scalar("training_loss",
+                                  train_loss,
+                                  global_step=epoch + 1)
 
             # validation section
             valid_loss, valid_acc = eval_model(device, model, valid_loader,
                                                loss_module)
             valid_scores.append(valid_acc)
-            writer.add_scalar("validation_loss",
-                              valid_loss,
-                              global_step=epoch + 1)
+            if if_logging:
+                writer.add_scalar("validation_loss",
+                                  valid_loss,
+                                  global_step=epoch + 1)
 
             print(
                 f"[Epoch {epoch+1:2d}] Training accuracy: {train_acc*100.0:05.2f}%, Validation accuracy: {valid_acc*100.0:05.2f}%"

@@ -13,7 +13,6 @@ from tqdm.notebook import tqdm
 from models.simple_models import SimpleLayer
 from models.utils import (train_model, train_model_with_logger,
                           train_model_default, save_model, load_model)
-from torch.utils.tensorboard import SummaryWriter
 
 # hyperparameters
 # activation function
@@ -47,8 +46,8 @@ checkpoint_path = "./checkpoints"
 #%% train, get the best result and test
 if __name__ == "__main__":
     # set device and seed
-    device = set_device(if_mac=True)
-    set_seed(if_mac=True)
+    device = set_device(if_mac=False)
+    set_seed(if_mac=False)
     # download and prepare MNIST data set
     train_data, valid_data, test_data = download_dataset()
 
