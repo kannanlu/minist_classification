@@ -50,7 +50,7 @@ class SimpleLayer(nn.Module):
 
 
 class TwoLayer(nn.Module):
-    """28*28 to 50 hiden to 10 single layer nn
+    """28*28 to 50 hiden to 10 MLP nn
     """
 
     def __init__(self, act_fn_name: str, c_in: int, c_hidden: int,
