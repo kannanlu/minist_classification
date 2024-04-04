@@ -47,3 +47,32 @@ class SimpleLayer(nn.Module):
         x = self.net(x)
         x = self.act_fn(x)
         return x
+
+
+class TwoLayer(nn.Module):
+    """28*28 to 50 hiden to 10 single layer nn
+    """
+
+    def __init__(self, act_fn_name: str, c_in: int, c_hidden: int,
+                 c_out: int) -> None:
+        super().__init__()
+
+        self.flatten = nn.Flatten()
+        self.act_fn = act_fn_by_name[act_fn_name.lower()]()  #pass in low str
+        self.ly1 = nn.Linear(c_in, c_hidden)
+        self.ly2 = nn.Linear(c_hidden, c_out)
+        self.config = {
+            "act_fn_name":
+            self.act_fn.__class__.__name__,  # store names in nn 
+            "c_in": c_in,
+            "c_hidden": c_hidden,
+            "c_out": c_out,
+        }
+
+    def forward(self, x):
+        x = self.flatten(x)
+        x = self.ly1(x)
+        x = self.act_fn(x)
+        x = self.ly2(x)
+        x = self.act_fn(x)
+        return x

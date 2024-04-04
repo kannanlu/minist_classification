@@ -10,7 +10,7 @@ from models.data_format import MNISTDataset
 import torch.nn as nn
 from torch import optim
 from tqdm.notebook import tqdm
-from models.simple_models import SimpleLayer
+from models.simple_models import (SimpleLayer, TwoLayer)
 from models.utils import (train_model, train_model_with_logger,
                           train_model_default, save_model, load_model)
 
@@ -36,11 +36,11 @@ logging_dir = "./logs"
 # data loader parameters
 batch_size = 8
 if_shuffle = True
-num_workers = 4
+num_workers = 8
 if_drop_last = True
 
 # model save/load
-model_name = "SimpleLayer"
+model_name = "TwoLayer"
 checkpoint_path = "./checkpoints"
 
 #%% train, get the best result and test
@@ -72,7 +72,10 @@ if __name__ == "__main__":
                                   drop_last=if_drop_last)
 
     # set up model, loss module, and optimizer
-    model = SimpleLayer(act_fn_name="sigmoid", c_in=28 * 28, c_out=10)
+    model = TwoLayer(act_fn_name="sigmoid",
+                     c_in=28 * 28,
+                     c_hidden=50,
+                     c_out=10)
     loss_model = loss_fn_by_name["cross_entropy"]()
     optimizer = optim_by_name["sgd"](model.parameters(), lr=0.01)
 
