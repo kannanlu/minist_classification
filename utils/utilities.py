@@ -13,6 +13,7 @@ import numpy as np
 import pandas as pd
 import math
 import torch.nn as nn
+import torch.utils.data as data
 
 
 ############## device and seed wrappers #################
@@ -125,7 +126,7 @@ def kaiming_init(model):
 
 
 def xavier_init(model):
-    """initialize model withe Kaiming initialization
+    """initialize model withe Xavier initialization
     """
     for name, param in model.named_parameters():
         if name.endswith(".bias"):
@@ -146,3 +147,20 @@ def _get_model_file(model_path, model_name):
 
 def _get_result_file(model_path, model_name):
     return os.path.join(model_path, model_name + "_results.json")
+
+
+##################### data process wrapper ##############################
+class WrappedDataLoader:
+    """a wrapper around DataLoader to perform data preprocessing using func.
+    """
+
+    def __init__(self, data_loader: data.DataLoader, func: callable) -> None:
+        self.data_loader = data_loader
+        self.func = func
+
+    def __len__(self):
+        return len(self.data_loader)
+
+    def __iter__(self):
+        for batch in self.data_loader:
+            yield (self.func(*batch))

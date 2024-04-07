@@ -40,7 +40,7 @@ num_workers = 8
 if_drop_last = True
 
 # model save/load
-model_name = "TwoLayer"
+# model_name = "TwoLayer"
 checkpoint_path = "./checkpoints"
 
 #%% train, get the best result and test
@@ -89,7 +89,7 @@ if __name__ == "__main__":
                                   valid_loader,
                                   test_loader,
                                   loss_model,
-                                  model_name,
+                                  model_name=model.__class__.__name__,
                                   num_epochs=100,
                                   logging_dir=logging_dir,
                                   checkpoint_path=checkpoint_path,

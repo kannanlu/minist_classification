@@ -8,6 +8,7 @@ from torch.utils.data import random_split
 import torch
 import numpy as np
 import matplotlib.pyplot as plt
+from torch.utils import data
 
 
 def download_dataset():
